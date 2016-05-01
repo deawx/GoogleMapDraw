@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drawing tools</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      // This example requires the Drawing library. Include the libraries=drawing
+
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 16.2523318, lng: 80.0679786},
+          zoom: 15
+        });
+
+        var drawingManager = new google.maps.drawing.DrawingManager({
+          drawingMode: google.maps.drawing.OverlayType.MARKER,
+          drawingControl: true,
+          drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: [
+              //google.maps.drawing.OverlayType.MARKER,
+              google.maps.drawing.OverlayType.POLYGON,
+              google.maps.drawing.OverlayType.POLYLINE,
+              google.maps.drawing.OverlayType.CIRCLE
+              //google.maps.drawing.OverlayType.RECTANGLE
+            ]
+          },
+          markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
+          circleOptions: {
+            fillColor: '#ffff00',
+            fillOpacity: 1,
+            strokeWeight: 5,
+            clickable: false,
+            editable: true,
+            zIndex: 1
+          }
+        });
+        drawingManager.setMap(map);
+          
+        google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
+            if (event.type == google.maps.drawing.OverlayType.CIRCLE) {
+                var radius = event.overlay.getRadius();
+                alert("Radius of circle =" + radius + " m");
+            }
+            if (event.type == google.maps.drawing.OverlayType.POLYGON) {
+                var geom = event.overlay.getPath();
+                alert("Area of POLYGON =" + calculateArea(geom) + " sq. m");
+            }
+            if (event.type == google.maps.drawing.OverlayType.POLYLINE) {
+                var geom = event.overlay.getPath();
+                alert("Length of POLYLINE =" + calculateLength(geom) + " m");
+            }
+        });
+      }
+        
+      // Calculates area in sq meters
+      function calculateArea(geom) {
+          var areaInMetres = google.maps.geometry.spherical.computeArea(geom); 
+          //var areaInHectare = areaInMetres * .0001; 
+          return areaInMetres;
+      }
+        
+      // Calculates length in meters
+      function calculateLength(geom) {
+          var areaInMetre = google.maps.geometry.spherical.computeLength(geom);
+          return areaInMetre;
+      }
+        
+          
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPdFudCEn9nRT-6W8lBEJuiG86PIA2N0Q&libraries=drawing,geometry&callback=initMap"
+         async defer></script>
+  </body>
+</html>
